@@ -11,6 +11,43 @@ the following form: YYYY.0M.0D.
 - Disabled an aspect of the coderunner extension
 - Fixed broken links
 - Disabled AI features globally
+- 
+
+
+## 2025.03.24
+
+### Added
+
+- Designed kernel and enhanced interfaces for GameInventory component
+- Added hierarchy diagram for GameInventory component
+
+### Updated
+
+- Changed design to include `size()` kernel method to support secondary method implementations
+- Changed design to include `Iterable<String>` in kernel to allow iteration in secondary methods
+- Changed design to include `mostAbundantItem()` and `mergeFrom()` as secondary methods
+
+
+
+## 2025.02.13
+
+### Added
+
+- Designed a proof of concept for GameInventory component
+
+### Updated
+
+- Changed design to include `transferItem()` between two inventories
+- Changed design to include `displayInventory()` for printing inventory contents
+
+## 2025.02.06
+
+### Added
+
+- Designed a ReadingTracker component
+- Designed a GameInventory component
+- Designed a EventPopularityAnalyzer component
+
 
 ## [2024.12.30]
 
