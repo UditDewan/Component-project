@@ -4,8 +4,6 @@ import java.util.Map;
 /**
  * Proof-of-Concept for an RPG GameInventory component.
  *
- * This is NOT the full OSU-discipline version.
- * It is a minimal working implementation to prove feasibility.
  */
 public class GameInventoryMVP {
 
