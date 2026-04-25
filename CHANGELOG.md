@@ -40,7 +40,7 @@ the following form: YYYY.0M.0D.
 - No changes were made to the kernel or enhanced interfaces; all
   additions in this release are tests, sample clients, and documentation
 
-## 2026.04.12
+## 2026.04.24
 
 ### Added
 
