@@ -11,8 +11,68 @@ the following form: YYYY.0M.0D.
 - Disabled an aspect of the coderunner extension
 - Fixed broken links
 - Disabled AI features globally
-- 
 
+## 2026.04.24
+
+### Added
+
+- Added JUnit test file `GameInventory1LTest` covering the constructor,
+  every kernel method, iterator semantics (including that the wrapped
+  `remove()` throws `UnsupportedOperationException`), and every Standard
+  method
+- Added JUnit test file `GameInventoryTest` covering every secondary
+  method as well as the `equals`, `hashCode`, and `toString` overrides,
+  including tie handling in `mostAbundantItem` and order-independent
+  hash consistency
+- Added use case `InventoryTradingDemo` — a scripted RPG scene that loots
+  a chest, trades with a shopkeeper, and merges a quest reward
+- Added use case `CraftingStation` — a component that holds a
+  `GameInventory` in its own representation to model recipes and consume
+  ingredients from a player's inventory
+- Added polished project `README.md` documenting the hierarchy, API,
+  project layout, convention and correspondence, and how to run the tests
+  and demos
+- Added reflection responses covering growth, knowledge gaps, skills
+  gained, and next steps
+
+### Updated
+
+- No changes were made to the kernel or enhanced interfaces; all
+  additions in this release are tests, sample clients, and documentation
+
+## 2026.04.24
+
+### Added
+
+- Designed kernel implementation `GameInventory1L` for the GameInventory
+  component, layered on top of `java.util.HashMap<String, Integer>`
+- Documented convention (representation invariant) and correspondence
+  (abstraction function) at the top of `GameInventory1L`
+- Implemented all kernel methods (`addItem`, `removeItem`, `getQuantity`,
+  `size`) according to the convention and correspondence
+- Implemented the `Iterable<String>` iterator, wrapped so that `remove()`
+  throws `UnsupportedOperationException` to prevent clients from bypassing
+  the kernel
+- Implemented all Standard methods (`newInstance`, `clear`, `transferFrom`),
+  including a `createNewRep()` helper and an O(1) reference swap in
+  `transferFrom`
+- Added a no-argument constructor that initializes the inventory to empty
+- Designed abstract class `GameInventorySecondary` for the GameInventory
+  component
+- Implemented all secondary methods (`hasItem`, `totalItems`,
+  `mostAbundantItem`, `transferItem`, `mergeFrom`) using only kernel
+  methods and iteration
+- Implemented `toString()`, `equals(Object)`, and `hashCode()` using only
+  kernel methods, so concrete kernel implementations do not need to
+  override them
+- Added precondition assertions to every secondary method to match the
+  contracts on the enhanced interface
+
+### Updated
+
+- No changes were made to the kernel or enhanced interfaces; all
+  secondary-method and kernel-method signatures were implemented as
+  previously specified
 
 ## 2025.03.24
 
@@ -23,11 +83,12 @@ the following form: YYYY.0M.0D.
 
 ### Updated
 
-- Changed design to include `size()` kernel method to support secondary method implementations
-- Changed design to include `Iterable<String>` in kernel to allow iteration in secondary methods
-- Changed design to include `mostAbundantItem()` and `mergeFrom()` as secondary methods
-
-
+- Changed design to include `size()` kernel method to support secondary
+  method implementations
+- Changed design to include `Iterable<String>` in kernel to allow
+  iteration in secondary methods
+- Changed design to include `mostAbundantItem()` and `mergeFrom()` as
+  secondary methods
 
 ## 2025.02.13
 
@@ -38,7 +99,8 @@ the following form: YYYY.0M.0D.
 ### Updated
 
 - Changed design to include `transferItem()` between two inventories
-- Changed design to include `displayInventory()` for printing inventory contents
+- Changed design to include `displayInventory()` for printing inventory
+  contents
 
 ## 2025.02.06
 
@@ -47,7 +109,6 @@ the following form: YYYY.0M.0D.
 - Designed a ReadingTracker component
 - Designed a GameInventory component
 - Designed a EventPopularityAnalyzer component
-
 
 ## [2024.12.30]
 
