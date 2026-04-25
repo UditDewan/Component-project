@@ -16,6 +16,8 @@ the following form: YYYY.0M.0D.
 
 ### Added
 
+- Added Junit test file `GameInventory1LTest` covering every test case not convered by the others
+
 - Added JUnit test file `GameInventory1LTest` covering the constructor,
   every kernel method, iterator semantics (including that the wrapped
   `remove()` throws `UnsupportedOperationException`), and every Standard
