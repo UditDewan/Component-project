@@ -1,90 +1,149 @@
-# Portfolio Project
+# GameInventory
 
-The purpose of this repo is to provide a framework for creating your own
-component in the software sequence discipline. If you were unsure whether
-or not to make your own, consider the following testimonial:
+An OSU-discipline software component that models a **video game inventory** —
+a finite mapping from item names to positive integer quantities, with no
+stack limit and no weight cap. Items are added, removed, transferred between
+inventories, merged, and queried through a small, well-specified API.
 
-> I really enjoyed the portfolio project! It gave me a stronger understanding
-> of the OSU software discipline while also giving me the flexibility to
-> design something that reflected my interests. This made the experience
-> rewarding and enjoyable as I created a product I was proud of!
+This component was built as the portfolio project for CSE 2231. It follows
+the software sequence discipline: a kernel interface, an enhanced interface
+layered on top, an abstract class that implements all secondary methods
+using only the kernel, and a thin kernel implementation over
+`java.util.HashMap`.
 
-## Recommended Steps to Get Started
+## Why this component?
 
-When starting your portfolio project, the following steps should make your life
-a bit easier.
+Games like Minecraft, Kingdom Come: Deliverance, Fallout, and Baldur's
+Gate 3 all use some notion of an inventory — but they often add weight
+limits and max stack sizes that slow down play without adding much
+strategic depth. `GameInventory` deliberately strips both of those away, so
+it can serve as a clean building block for any RPG-style project that just
+needs to track *what* the player has and *how much*.
 
-### Step 1: Create a Repo From This Template
+## Hierarchy
 
-<!-- TODO: use GitHub to create a repo from this template -->
+```
+Standard<GameInventory>    Iterable<String>
+        \                       /
+         \                     /
+         GameInventoryKernel
+                  |
+            GameInventory                  (enhanced interface)
+                  |
+         GameInventorySecondary            (secondary methods + Object overrides)
+                  |
+           GameInventory1L                 (HashMap-backed kernel implementation)
+```
 
-Assuming you're reading this README from GitHub, you can make use of this
-repo by clicking the `Use this template` button in the top-right corner of
-this page. If you can't find the button, [this link][use-this-template] 
-should work as well. Personally, I would recommend using the 
-`Create a new repository` option, which will allow you to name the 
-repository after your component. Given that you will be submitting pull 
-requests to me through Carmen, you'll want to make sure your repository 
-is public. Then, you can click `Create repository`. After that, you can 
-go through all the usual steps of cloning a repository on your system to 
-get to work. I use GitHub Desktop to clone projects, and it has a nice 
-feature of letting you open a repo directly in VSCode from the 
-`Repository` menu.
+## Quick start
 
-### Step 2: Install Recommended Plugins
+```java
+import components.gameinventory.GameInventory;
+import components.gameinventory.GameInventory1L;
 
-<!-- TODO: install recommended plugins and delete this comment -->
+GameInventory player = new GameInventory1L();
+player.addItem("Gold", 50);
+player.addItem("Health Potion", 3);
 
-When you open VSCode with this project, you should get a notification in the
-bottom right corner that there are some recommended extensions to install.
-Click install all. If you ignored this message or it never came up, feel free
-to press CTRL+SHIFT+P and type "Show Recommended Extensions". Install all of the
-extensions listed.
+GameInventory chest = new GameInventory1L();
+chest.addItem("Gold", 100);
+chest.transferItem(player, "Gold", 100);  // player now has 150 gold
 
-### Step 3: Install the Latest JDK
+System.out.println(player);                // {Gold=150, Health Potion=3}
+System.out.println(player.mostAbundantItem());  // Gold
+```
 
-<!-- TODO: install latest JDK and delete this comment -->
+## API overview
 
-If you do not have an available JDK on your system, you may be prompted to
-install one by VSCode. The default seems to be Red Hat's OpenJDK, which seems to
-require you to register for an account or to install on the command line.
-Regardless, there is no mac support. As a result, I would just recommend
-installing the latest JDK [directly from Oracle's site][jdk-downloads].
+**Kernel methods** (in `GameInventoryKernel`):
 
-### Step 4: Add Key Libraries to Project
+| Method | What it does |
+|---|---|
+| `addItem(item, qty)` | add `qty` of `item` (creates the entry if new) |
+| `removeItem(item, qty)` | remove `qty` of `item` (deletes the entry if it hits zero) |
+| `getQuantity(item)` | returns the current count, or 0 if the item isn't present |
+| `size()` | returns the number of distinct item names |
+| `iterator()` | iterates over the names of items currently in the inventory |
 
-<!-- TODO: add key libraries to project and delete this comment -->
+**Secondary methods** (in `GameInventory`):
 
-As you are probably all aware at this point, you need the components jar to get
-anything running. My advice is to [download it from here][components-jar]. Then,
-drop it into the `lib` folder in the project. Git automatically ignores anything
-you put here by default, so don't worry about committing it to version control.
+| Method | What it does |
+|---|---|
+| `hasItem(item)` | true iff `item` is present with quantity > 0 |
+| `totalItems()` | sum of all quantities across all items |
+| `mostAbundantItem()` | name of an item tied for the largest quantity |
+| `transferItem(other, item, qty)` | move `qty` of `item` from this to `other` |
+| `mergeFrom(source)` | combine everything from `source` into this; `source` ends empty |
 
-Similarly, you will need the testing APIs (e.g., JUnit). Perhaps the easiest way
-to include them in your project is to click the beaker symbol in the left
-sidebar; it's right below the extensions button which looks like four squares.
-If you do not see this button, try creating a Java file in `src`. From there, 
-you can click "Enable Java Tests" and then click "JUnit" from the
-dropdown. That's it! You should now see the two JUnit libraries in the lib
-folder.
+**Standard methods** come from `Standard<GameInventory>`: `newInstance`,
+`clear`, `transferFrom`.
 
-**Note**: if you're using VSCode for class projects, you might be wondering
-why you never had to do this. In general, it's bad practice to commit binaries
-to version control. However, we have no way of managing dependencies with the
-custom `components.jar`, so I included them directly in the template. I did not
-include them here, so you could see how it might be done from scratch. If at any
-point you're struggling with Step 3, just copy the lib folder from the monorepo
-template.
+## Project layout
 
-## Next Steps
+```
+src/
+├── components/
+│   └── gameinventory/
+│       ├── GameInventoryKernel.java        kernel interface
+│       ├── GameInventory.java              enhanced interface
+│       ├── GameInventorySecondary.java     abstract class
+│       └── GameInventory1L.java            kernel implementation
+├── InventoryTradingDemo.java               use case #1 — scripted scene
+└── CraftingStation.java                    use case #2 — layered component
 
-<!-- TODO: navigate to part 1 of the portfolio project and delete this comment -->
+test/
+└── components/
+    └── gameinventory/
+        ├── GameInventory1LTest.java        kernel + Standard tests
+        └── GameInventoryTest.java          secondary + Object-override tests
 
-Now that you have everything setup, you can begin crafting your component. There
-will be deadlines for each step in Carmen, but you're free to complete each step
-as early as you'd like. To start, you'll want to visit the [doc](doc/) directory
-for each assignment file.
+doc/
+└── 01..06 assignment write-ups
 
-[components-jar]: https://cse22x1.engineering.osu.edu/common/components.jar
-[jdk-downloads]: https://www.oracle.com/java/technologies/downloads/
-[use-this-template]: https://github.com/new?template_name=portfolio-project&template_owner=jrg94
+CHANGELOG.md   Keep-a-Changelog style history, CalVer dated
+```
+
+## Use cases
+
+Two worked examples live in `src/`:
+
+- **`InventoryTradingDemo`** — a scripted RPG scene: the player loots a
+  chest, sells potions to a shopkeeper for gold, and claims a quest reward.
+  This exercises the full API end to end.
+- **`CraftingStation`** — a small component that uses a `GameInventory` as
+  part of its *own* representation. A station holds a recipe (also a
+  `GameInventory`), checks a player's inventory for the required
+  ingredients, and consumes them to produce an output item. This is the
+  "component as building block" pattern.
+
+Each use case has a `main` method you can run directly.
+
+## Testing
+
+Run the JUnit suites under `test/components/gameinventory/`:
+
+- `GameInventory1LTest` — constructor, every kernel method, iterator
+  semantics (including the wrapped `remove()` throwing
+  `UnsupportedOperationException`), and every Standard method.
+- `GameInventoryTest` — every secondary method and the `equals` /
+  `hashCode` / `toString` overrides. Non-mutating tests also check that
+  the inventory is unchanged by comparing against a separately-built
+  "expected" inventory.
+
+Tests that depend on iteration order (e.g. `toString`, `mostAbundantItem`
+on a tie) verify contract-level properties rather than a specific literal
+string or key, because iteration order on a `HashMap` is not guaranteed.
+
+## Convention & correspondence
+
+Documented at the top of `GameInventory1L`:
+
+- **Convention:** the backing `Map<String, Integer>` is non-null, every key
+  is a non-empty string, every value is strictly positive. Entries whose
+  quantity would drop to zero are deleted rather than stored as zero.
+- **Correspondence:** the abstract inventory is the partial function whose
+  domain is the map's key set, where `this[k] = items.get(k)`.
+
+## License
+
+See `LICENSE` in the repo root.
